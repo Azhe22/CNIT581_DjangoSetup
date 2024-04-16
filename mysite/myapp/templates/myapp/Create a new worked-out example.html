@@ -1,0 +1,131 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+{% block title %} Create a New Worked-Out Example {% endblock %}
+{% block content %}
+    <div class="header-section" xmlns="http://www.w3.org/1999/html">
+        <nav class="navigation">
+
+            <a href="{% url 'index' %}">Home</a> ›
+            <a href="{% url 'expert' %}">Be an Expert</a> >
+            <a href="">Create a NEW Worked-Out Example</a>
+        </nav>
+        <p class="welcome">Good morning/afternoon/night, Username</p>
+    </div>
+    <form method="post" action="{% url 'new_workout' %}">
+        <div class="container">
+            <div class="left-panel">
+                <div class="form-section">
+                    <div>
+                        <label data-target="problem-background">Problem Background</label>
+                        <label data-target="data-section">Data</label>
+                        <label data-target="solution-section">Solution</label>
+                        <label data-target="self-review-section">Self-Review</label>
+                    </div>
+                </div>
+                <div id="problem-background" class="content-Section">
+                    <h2>Problem Context and Description</h2>
+                    <label>Topics Practiced in this worked-out example</label>
+                    <label>
+                        <select>
+                            <option>Basic PL/SQL</option>
+                            <option>Function</option>
+                            <option>Procedure</option>
+                            <option>Triggers and Constraints</option>
+                            <option>Others</option>
+                        </select>
+                    </label>
+
+                    <label>Problem Context</label>
+                    <label>
+                        <textarea placeholder="Define the context of your worked-out example here."></textarea>
+                    </label>
+
+                    <label>Problem Description</label>
+                    <label>
+                        <textarea placeholder="Describe the problem of your worked-out example here."></textarea>
+                    </label>
+                </div>
+                <div id="data-section" class="content-Section">
+                    <h2>Data</h2>
+                    <label>Input Data</label>
+                    <label>
+                        <textarea placeholder="Define the input data of your worked-out example here."></textarea>
+                    </label>
+
+                    <label>Output Data</label>
+                    <label>
+                        <textarea placeholder="Define the output data of your worked-out example here."></textarea>
+                    </label>
+                </div>
+                <div id="solution-section" class="content-Section">
+                    <h2>Solution</h2>
+                    <label>SQL Code</label>
+                    <label>
+                        <textarea placeholder="Write the SQL code of your worked-out example here."></textarea>
+                    </label>
+
+                    <label>Explanation</label>
+                    <label>
+                        <textarea placeholder="Explain the SQL code of your worked-out example here."></textarea>
+                    </label>
+                </div>
+                <div id="self-review-section" class="content-Section">
+                    <h2>Self-Review</h2>
+                    <label>Difficulty Level</label>
+                    <label>
+                        <select>
+                            <option>Easy</option>
+                            <option>Medium</option>
+                            <option>Hard</option>
+                        </select>
+                    </label>
+
+                    <label>Time Taken</label>
+                    <label>
+                        <input type="text" placeholder="Time taken to solve the problem">
+                    </label>
+
+                    <label>Rating</label>
+                    <label>
+                        <select>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="help-panel">
+                    <h2>Need Help?</h2>
+                    <p>Intentionally left blank for later implementation of ChatGPT</p>
+                </div>
+            </div>
+        </div>
+        <div class="center">
+            <input type="submit" value="Cancel and Exit">
+            <input type="submit" value="Save and Exit">
+            <input type="submit" value="Save and Submit">
+        </div>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const labels = document.querySelectorAll('.form-section label');
+        labels.forEach(label => {
+            label.addEventListener('click', () => {
+                const target = label.getAttribute('data-target');
+                const contentSections = document.querySelectorAll('.content-Section');
+                contentSections.forEach(section => {
+                    if (section.id === target) {
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
