@@ -20,6 +20,7 @@ class Example(models.Model):
     project_context = models.TextField()
     data_table_description = models.TextField()
     completed = models.BooleanField(default=False)
+
     def __str__(self):
         return f"{self.title} by {self.creator.user.username}"
 
@@ -50,9 +51,20 @@ class ReviewStepResponse(models.Model):
     # Add more fields as necessary for step response
 
 
-class Feedback(models.Model):
+class ReviewQuestion(models.Model):
+    question_text = models.TextField()
+    response_type = models.CharField(max_length=20, choices=[
+        ('rating', 'Rating'),
+        ('free_response', 'Free Response'),
+    ])
+
+    def __str__(self):
+        return f"Review Question: {self.question_text[:50]}..."
+
+
+class ReviewQuestionResponse(models.Model):
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='feedbacks')
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='feedbacks')
+    question = models.ForeignKey(ReviewQuestion, on_delete=models.CASCADE, related_name='feedbacks')
     rating = models.CharField(max_length=50, choices=[
         ('completely_disagree', 'Completely Disagree'),
         ('disagree', 'Disagree'),

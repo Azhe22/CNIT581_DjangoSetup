@@ -5,7 +5,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import AssignedReview, Example
+from .models import AssignedReview, Example, ReviewQuestion
 
 
 # Create your views here.
@@ -79,33 +79,37 @@ def review_menu(request):
 @login_required(login_url='index')
 def review(request, example_id):
     # Fetch the example first (optional: add error handling if example does not exist)
-    example = get_object_or_404(Example, pk=example_id)
+    # example = get_object_or_404(Example, pk=example_id)
+    review_questions = ReviewQuestion.objects.all()
     context = {
         'navigation_items': [
             {'name': 'Home', 'url': 'index'},
             {'name': 'Be a Reviewer', 'url': 'review'},
             # Assuming you have a separate view or page for becoming a reviewer
-            {'name': 'Conduct a Review', 'url': 'review_example', 'params': {'example_id': example_id}},
+            {'name': 'Conduct a Review', 'url': 'review_example', 'example_id': example_id},
             # Assuming you need to pass parameters for clarity
         ],
-        'example': example,
+        "review_questions": review_questions,
+        # 'example': example,
     }
-
-    if not request.user.profile.is_instructor:
-        try:
-            assignment = AssignedReview.objects.get(example_id=example.id, reviewer=request.user.profile)
-        except AssignedReview.DoesNotExist:
-            return HttpResponseForbidden("You are not assigned to review this example.")
-
-        if request.method == 'POST':
-            # Process the review submission
-            assignment.completed = True
-            assignment.save()
-            return redirect('review')  # Ensure this URL is properly named and defined in your urls.py
-
-        context['assignment'] = assignment  # Add assignment to context if needed in the template
-
-    return render(request, 'myapp/Show Review Examples.html', context)
+    print(review_questions)
+    return render(request, 'myapp/Show_Review_Examples.html', context)
+    #
+    # if not request.user.profile.is_instructor:
+    #     try:
+    #         assignment = AssignedReview.objects.get(example_id=example.id, reviewer=request.user.profile)
+    #     except AssignedReview.DoesNotExist:
+    #         return HttpResponseForbidden("You are not assigned to review this example.")
+    #
+    #     if request.method == 'POST':
+    #         # Process the review submission
+    #         assignment.completed = True
+    #         assignment.save()
+    #         return redirect('review')  # Ensure this URL is properly named and defined in your urls.py
+    #
+    #     context['assignment'] = assignment  # Add assignment to context if needed in the template
+    #
+    # return render(request, 'myapp/Show_Review_Examples.html', context)
 
 
 def new_workout(request):
