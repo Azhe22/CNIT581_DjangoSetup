@@ -46,8 +46,8 @@
                     </label>
                 </div>
                 <div id="data-section" class="content-Section">
-                    <h2>Data</h2>
-                    <label>Input Data</label>
+                   <h2>Data Tables</h2>
+                    <!--  <label>Input Data</label>
                     <label>
                         <textarea placeholder="Define the input data of your worked-out example here."></textarea>
                     </label>
@@ -55,11 +55,48 @@
                     <label>Output Data</label>
                     <label>
                         <textarea placeholder="Define the output data of your worked-out example here."></textarea>
-                    </label>
+                    </label> -->
+                    <div id="datatable1">
+                        <label id="data">Data Table #1: </label> 
+                        <textarea id="tablename">Enter the name for your first data table</textarea>
+                        <table id="myTable">
+                            <th>Attribute Name</th>
+                            <th>Attribute Type</th>
+                            <tr>
+                            <form id = "myform">
+                                <td><input type="text" id="aname" name="aname" value=""></td>
+                                <td> <input type="text" id="atype" name="atype" value=""></td>
+                            </form>
+                            </tr>
+                        </table>
+                        <br>
+            
+                        <button onclick="myCreateFunction('myTable','aname','atype','myform')">Create row</button>
+                        <button onclick="myDeleteFunction('myTable')">Delete row</button>
+                    </div>
+                
+                    <div id="datatable1">
+                        <label id="data">Data Table #2: </label>
+                        <textarea id="tablename">Enter the name for your second data table</textarea>
+                        <table id="myTable2">
+                            <th>Attribute Name</th>
+                            <th>Attribute Type</th>
+                            <tr>
+                            <form id = "myform2">
+                                <td><input type="text" id="aname2" name="aname" value=""></td>
+                                <td> <input type="text" id="atype2" name="atype" value=""></td>
+                            </form>
+                            </tr>
+                        </table>
+                        <br>
+            
+                        <button onclick="myCreateFunction('myTable2','aname2','atype2','myform2')">Create row</button>
+                        <button onclick="myDeleteFunction('myTable2')">Delete row</button>
+                    </div>
                 </div>
                 <div id="solution-section" class="content-Section">
                     <h2>Solution</h2>
-                    <label>SQL Code</label>
+                    <!-- <label>SQL Code</label>
                     <label>
                         <textarea placeholder="Write the SQL code of your worked-out example here."></textarea>
                     </label>
@@ -67,7 +104,26 @@
                     <label>Explanation</label>
                     <label>
                         <textarea placeholder="Explain the SQL code of your worked-out example here."></textarea>
-                    </label>
+                    </label> -->
+                    <div id="datatable1">
+                        <label id="solution">List your step-by-step solutions below: </label> 
+                        <table id="myTable">
+                            <th>Step Number</th>
+                            <th>Step Description</th>
+                            <th>Suggested Codes</th>
+                            <tr>
+                            <form id = "myform">
+                                <td><input type="number" id="snumber" name="snumber" value=""></td>
+                                <td><input type="text" id="sdescription" name="sdescription" value=""></td>
+                                <td> <input type="text" id="scode" name="scode" value=""></td>
+                            </form>
+                            </tr>
+                        </table>
+                        <br>
+            
+                        <button onclick="myCreateFunction('myTable','aname','atype','myform')">Create row</button>
+                        <button onclick="myDeleteFunction('myTable')">Delete row</button>
+                    </div>
                 </div>
                 <div id="self-review-section" class="content-Section">
                     <h2>Self-Review</h2>
@@ -128,5 +184,24 @@
                 });
             });
         });
+        //Let user enter inputs and add rows for data tables
+        function myCreateFunction(tablename,fname,lname,myform) {
+            var table = document.getElementById(tablename);
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML = document.getElementById(fname).value;
+            cell2.innerHTML = document.getElementById(lname).value;
+            document.getElementById(myform).reset();
+        }
+        function myDeleteFunction(tablename) {
+            var table = document.getElementById(tablename);
+            var rowCount = table.rows.length;
+            if (rowCount >=2){
+            document.getElementById(tablename).deleteRow(rowCount-1);
+            }
+  	
+        }
     </script>
 {% endblock %}

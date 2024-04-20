@@ -432,3 +432,8 @@ footer a {
 #problem-background {
     display: block;
 }
+
+#data{
+    font-size: 12pt;
+    font-weight: bold;
+}
