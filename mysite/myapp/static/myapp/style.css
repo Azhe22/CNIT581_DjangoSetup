@@ -216,6 +216,7 @@ footer {
     overflow: auto;
     width: 50%;
     margin-right: 10px;
+    /*background: white;*/
 }
 
 /*review*/
@@ -225,14 +226,16 @@ footer {
 
     border: solid 0.1rem black;
     padding: 10px;
+    /*background: white;*/
 }
 
 /*Slider Parts Don't Change as i don't know if i can fix it*/
 .slider-container {
     width: 100%;
-    max-width: 600px; /* Adjust the max-width as needed */
+    max-width: 80%; /* Adjust the max-width as needed */
     position: relative;
-    margin: auto auto 30px;
+    /*margin-bottom: 30px;*/
+    margin: 30px auto;
 }
 
 .slider {

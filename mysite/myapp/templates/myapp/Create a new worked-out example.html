@@ -52,7 +52,8 @@
                     <h2>Data Tables</h2>
                     <div>
                         <label id="data">Data Table #1: </label>
-                        <label for="table name"></label><textarea id="table name" placeholder="Enter the name for your first data table"></textarea>
+                        <label for="table name"></label><textarea id="table name"
+                                                                  placeholder="Enter the name for your first data table"></textarea>
                         <table id="data_table_1">
                             <tr>
                                 <th>Attribute Name</th>
@@ -73,9 +74,10 @@
                         <button type="button" onclick="myDeleteFunction('data_table_1')">Delete row</button>
                     </div>
 
-                    <div id="datatable1">
+                    <div>
                         <label id="data">Data Table #2: </label>
-                        <label for="table name"></label><textarea id="table name" placeholder="Enter the name for your second data table"></textarea>
+                        <label for="table name"></label><textarea id="table name"
+                                                                  placeholder="Enter the name for your second data table"></textarea>
                         <table id="data_table_2">
                             <tr>
                                 <th>Attribute Name</th>
@@ -99,15 +101,6 @@
                 </div>
                 <div id="solution-section" class="content-Section">
                     <h2>Solution</h2>
-                    <!-- <label>SQL Code</label>
-                    <label>
-                        <textarea placeholder="Write the SQL code of your worked-out example here."></textarea>
-                    </label>
-
-                    <label>Explanation</label>
-                    <label>
-                        <textarea placeholder="Explain the SQL code of your worked-out example here."></textarea>
-                    </label> -->
                     <div id="datatable1">
                         <label id="solution">List your step-by-step solutions below: </label>
                         <table id="step_table">
@@ -131,30 +124,25 @@
                 </div>
                 <div id="self-review-section" class="content-Section">
                     <h2>Self-Review</h2>
-                    <label>Difficulty Level</label>
-                    <label>
-                        <select>
-                            <option>Easy</option>
-                            <option>Medium</option>
-                            <option>Hard</option>
-                        </select>
-                    </label>
-
-                    <label>Time Taken</label>
-                    <label>
-                        <input type="text" placeholder="Time taken to solve the problem">
-                    </label>
-
-                    <label>Rating</label>
-                    <label>
-                        <select>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                        </select>
-                    </label>
+                    <div>
+                        {% for question in review_questions %}
+                            {% if question.response_type == 'rating' %}
+                                <div class="slider-container">
+                                    {{ forloop.counter }}. <label for="criteria{{ forloop.counter }}"
+                                > {{ question.question_text }}</label>
+                                    <input class="slider" id="criteria{{ forloop.counter }}" max="5" min="1"
+                                           questionid="{{ question.id }}" step="1" type="range">
+                                    <div class="slider-labels" style="--list-length: 5;">
+                                        <span>Completely Disagree</span>
+                                        <span>Disagree</span>
+                                        <span>Neutral</span>
+                                        <span>Agree</span>
+                                        <span>Completely Agree</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
                 </div>
 
                 <div class="help-panel">
@@ -167,6 +155,7 @@
             {% csrf_token %}
             <input type="hidden" id="hiddenDataTableFormData" name="data_tables">
             <input type="hidden" id="hiddenStepTableFormData" name="step_tables">
+            <input type="hidden" id="hiddenReviewData" name="review">
             <input type="submit" value="Cancel and Exit">
             <input type="submit" value="Save and Exit">
             <input type="submit" value="Save and Submit">
@@ -227,7 +216,11 @@
 
             tables.forEach(table => {
                 const tableData = [];
-                const rows = table.querySelectorAll('tr');
+                const tableDiv = table.closest('div'); // Get the parent div of the table
+                const tableNameElement = tableDiv.querySelector('textarea#table\\ name'); // Find the textarea for the table name
+                const tableName = tableNameElement.value; // Get the user-input table name
+
+                const rows = table.querySelectorAll('tr:not(:first-child)'); // Exclude the header row
                 rows.forEach(row => {
                     const inputs = row.querySelectorAll('input');
                     if (inputs.length === 2) {
@@ -237,21 +230,26 @@
                         });
                     }
                 });
-                formData.push(tableData);
+
+                formData.push({
+                    table_name: tableName, // Include table name in the data
+                    columns: tableData
+                });
             });
 
-            // Convert formData to JSON string for sending
             document.getElementById('hiddenDataTableFormData').value = JSON.stringify(formData);
-            const step_tables = document.querySelectorAll('[id^="step_table"]');  // Assuming all tables have IDs starting with 'myTable'
+
+            // step table data
+            const step_tables = document.querySelectorAll('[id^="step_table"]');
             const step_data_table = [];
 
             step_tables.forEach(table => {
-                const tableData = [];
+                {#const tableData = [];#}
                 const rows = table.querySelectorAll('tr');
                 rows.forEach(row => {
                     const inputs = row.querySelectorAll('input');
                     if (inputs.length === 3) {
-                        tableData.push({
+                        step_data_table.push({
                             Step_Number: inputs[0].value,
                             Step_Description: inputs[1].value,
                             Suggested_Codes: inputs[2].value
@@ -259,11 +257,23 @@
                         });
                     }
                 });
-                step_data_table.push(tableData);
+                {#step_data_table.push(tableData);#}
             });
 
             // Convert formData to JSON string for sending
-            document.getElementById('hiddenStepTableFormData').value = JSON.stringify(formData);
+            document.getElementById('hiddenStepTableFormData').value = JSON.stringify(step_data_table);
+
+            // review data
+            const review = [];
+            const sliders = document.querySelectorAll('.slider');
+            sliders.forEach(slider => {
+                review.push({
+                    question_id: slider.getAttribute('questionid'),
+                    rating: slider.value
+                });
+            });
+            document.getElementById('hiddenReviewData').value = JSON.stringify(review);
+
         }
 
     </script>

@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 
 
 # Create your models here.
@@ -18,16 +18,37 @@ class Example(models.Model):
     title = models.CharField(max_length=255)
     project_description = models.TextField()
     project_context = models.TextField()
-    data_table_description = models.TextField()
+    created_date = models.DateTimeField(auto_now_add=True)
     completed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.title} by {self.creator.user.username}"
 
 
+class DataTable(models.Model):
+    example = models.ForeignKey(Example, on_delete=models.CASCADE, related_name='data_tables')
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.name} in {self.example.title}"
+
+
+class DataColumn(models.Model):
+    data_table = models.ForeignKey(DataTable, on_delete=models.CASCADE, related_name='columns')
+    name = models.CharField(max_length=255)
+    data_type = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.name} in {self.data_table.name}"
+
+
 class Question(models.Model):
     example = models.ForeignKey(Example, on_delete=models.CASCADE, related_name='questions')
+    order = models.IntegerField(help_text="The order of the question within the example")
     text = models.TextField()
+
+    class Meta:
+        ordering = ['order']
 
 
 class QuestionStep(models.Model):
@@ -46,7 +67,7 @@ class Review(models.Model):
 
 class ReviewStepResponse(models.Model):
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='step_responses')
-    question_step = models.ForeignKey(QuestionStep, on_delete=models.CASCADE, related_name='review_responses')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='review_responses')
     sql_statement = models.TextField()
     # Add more fields as necessary for step response
 

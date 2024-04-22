@@ -1,13 +1,27 @@
 import json
-
+import requests
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden, HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import AssignedReview, Example, ReviewQuestion
+from .models import Example, ReviewQuestion, Question, DataColumn, DataTable, Profile, Review, ReviewQuestionResponse, \
+    ReviewStepResponse
+
+
+def get_weather():
+    api_key = "ff289146736a314c0c400765f2810086"
+    base_url = "http://api.openweathermap.org/geo/1.0/direct"
+    url = f"{base_url}?lat=40.42&lon=86.90&appid={api_key}"
+    response = requests.get(url)
+
+    # Parse JSON response
+    if response.status_code == 200:
+        weather_data = json.loads(response.content)
+        return weather_data['main']['temp'], weather_data['weather'][0]['description']
+    return None, None
 
 
 # Create your views here.
@@ -53,8 +67,11 @@ def expert(request):
         {'name': 'Home', 'url': 'index'},
         {'name': 'Be an Expert', 'url': 'expert'},
 
-    ]}
-    return render(request, 'myapp/Be an Expert.html', context)
+    ],
+        'completed_workouts': Example.objects.filter(creator=request.user.profile, completed=True),
+        'incomplete_workouts': Example.objects.filter(creator=request.user.profile, completed=False),
+    }
+    return render(request, 'myapp/be_an_expert.html', context)
 
 
 def explore(request):
@@ -64,18 +81,22 @@ def explore(request):
             {'name': 'Be an Explorer', 'url': 'explorer'},
         ]
     }
-    return render(request, 'myapp/Be an Explorer.html', context)
+    return render(request, 'myapp/be_an_explorer.html', context)
 
 
 def review_menu(request):
+    temperature, description = get_weather()
+    example_list = Example.objects.filter()
     context = {
         'navigation_items': [
             {'name': 'Home', 'url': 'index'},
             {'name': 'Be an Reviewer', 'url': 'review'},
-            {'name': 'Conduct a Review', 'url': 'review'},
-        ]
+        ],
+        "temperature": temperature,
+        "description": description,
+        "example_list": example_list,
     }
-    return render(request, 'myapp/Be an Reviewer.html', context)
+    return render(request, 'myapp/be_a_reviewer.html', context)
 
 
 @login_required(login_url='index')
@@ -83,7 +104,10 @@ def review(request, example_id):
     # Fetch the example first (optional: add error handling if example does not exist)
     # example = get_object_or_404(Example, pk=example_id)
     review_questions = ReviewQuestion.objects.all()
+    example = Example.objects.get(pk=example_id)
+
     context = {
+        'user': request.user,
         'navigation_items': [
             {'name': 'Home', 'url': 'index'},
             {'name': 'Be a Reviewer', 'url': 'review'},
@@ -92,9 +116,8 @@ def review(request, example_id):
             # Assuming you need to pass parameters for clarity
         ],
         "review_questions": review_questions,
-        # 'example': example,
+        "example": example,
     }
-    print(review_questions)
     return render(request, 'myapp/Show_Review_Examples.html', context)
     #
     # if not request.user.profile.is_instructor:
@@ -114,22 +137,77 @@ def review(request, example_id):
     # return render(request, 'myapp/Show_Review_Examples.html', context)
 
 
+@login_required(login_url='index')
 def new_workout(request):
     if request.method == "POST":
-        print(request.POST)
+        # Decode the POST data
         try:
-            data_tables = request.POST.get('data_tables')
-            data_tables_data = json.loads(data_tables)
-            step_tables = request.POST.get('step_tables')
-            step_tables_data = json.loads(step_tables)
-            print(data_tables_data)
+            data_tables_data = json.loads(request.POST.get('data_tables', '[]'))
+            step_tables_data = json.loads(request.POST.get('step_tables', '[]'))
+            review_data = json.loads(request.POST.get('review', '[]'))
         except json.JSONDecodeError:
             return HttpResponse("Invalid JSON data", status=400)
 
+        # Retrieve the profile of the logged-in user
+        profile = Profile.objects.get(user=request.user)
+
+        # Create the Example entry
+        example = Example.objects.create(
+            creator=profile,
+            title=request.POST.get('topic', 'No title provided'),
+            project_description=request.POST.get('problem_description', ''),
+            project_context=request.POST.get('problem_context', ''),
+            completed=True
+        )
+
+        # Create Data Tables and Columns
+        for table_info in data_tables_data:
+            data_table = DataTable.objects.create(
+                example=example,
+                name=table_info['table_name']  # Assuming the table name is in the first position
+            )
+            for column_info in table_info['columns']:
+                DataColumn.objects.create(
+                    data_table=data_table,
+                    name=column_info['Attribute_Name'],
+                    data_type=column_info['Attribute_Type']
+                )
+        review = Review.objects.create(
+            example=example,
+            reviewer=request.user.profile  # Assuming the creator is also the reviewer for now
+        )
+        # Create Questions from step_tables_data
+        for idx, steps in enumerate(step_tables_data, start=1):
+            question = Question.objects.create(
+                example=example,
+                order=steps['Step_Number'],
+                text=steps['Step_Description'],
+            )
+            ReviewStepResponse.objects.create(
+                review=review,
+                question=question,
+                sql_statement=steps['Suggested_Codes'],
+            )
+
+        # Handling review data
+
+        for response_data in review_data:
+            question = ReviewQuestion.objects.get(pk=response_data["question_id"])
+            ReviewQuestionResponse.objects.create(
+                review=review,
+                question=question,
+                rating=response_data["rating"],
+            )
+
+        return redirect('expert')
+
+    # GET request: Provide initial context for form
     context = {
         'navigation_items': [
             {'name': 'Home', 'url': 'index'},
             {'name': 'Create a new worked-out example', 'url': 'new_workout'},
-        ]
+        ],
+        'review_questions': ReviewQuestion.objects.all(),
+
     }
     return render(request, 'myapp/Create a new worked-out example.html', context)
