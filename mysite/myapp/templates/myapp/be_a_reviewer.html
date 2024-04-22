@@ -17,8 +17,8 @@
                 Good evening,
             {% endif %}
             {{ user.username }}
-            {% if temperature and condition %}
-                The current weather is {{ condition }} with a temperature of {{ temperature }} degrees.
+            {% if temperature and description %}
+                The current weather is {{ description }} with a temperature of {{ temperature }} degrees.
             {% endif %}
         </p>
     </div>

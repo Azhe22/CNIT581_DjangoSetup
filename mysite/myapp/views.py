@@ -12,11 +12,10 @@ from .models import Example, ReviewQuestion, Question, DataColumn, DataTable, Pr
 
 
 def get_weather():
-    api_key = "ff289146736a314c0c400765f2810086"
-    base_url = "https://api.openweathermap.org/geo/1.0/direct"
-    url = f"{base_url}?lat=40.42&lon=86.90&appid={api_key}"
+    api_key = "439d4b804bc8187953eb36d2a8c26a02"
+    base_url = "https://openweathermap.org/data/2.5/weather?id=4928096"
+    url = f"{base_url}&appid={api_key}"
     response = requests.get(url)
-
     # Parse JSON response
     if response.status_code == 200:
         weather_data = json.loads(response.content)
