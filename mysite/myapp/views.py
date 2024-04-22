@@ -1,7 +1,9 @@
+import json
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
@@ -113,6 +115,17 @@ def review(request, example_id):
 
 
 def new_workout(request):
+    if request.method == "POST":
+        print(request.POST)
+        try:
+            data_tables = request.POST.get('data_tables')
+            data_tables_data = json.loads(data_tables)
+            step_tables = request.POST.get('step_tables')
+            step_tables_data = json.loads(step_tables)
+            print(data_tables_data)
+        except json.JSONDecodeError:
+            return HttpResponse("Invalid JSON data", status=400)
+
     context = {
         'navigation_items': [
             {'name': 'Home', 'url': 'index'},

@@ -11,7 +11,7 @@
         </nav>
         <p class="welcome">Good morning/afternoon/night, Username</p>
     </div>
-    <form method="post" action="{% url 'new_workout' %}">
+    <form method="post" action="{% url 'new_workout' %}" onsubmit="prepareFormData();">
         <div class="container">
             <div class="left-panel">
                 <div class="form-section">
@@ -26,7 +26,7 @@
                     <h2>Problem Context and Description</h2>
                     <label>Topics Practiced in this worked-out example</label>
                     <label>
-                        <select>
+                        <select name="topic">
                             <option>Basic PL/SQL</option>
                             <option>Function</option>
                             <option>Procedure</option>
@@ -37,61 +37,64 @@
 
                     <label>Problem Context</label>
                     <label>
-                        <textarea placeholder="Define the context of your worked-out example here."></textarea>
+                        <textarea name="problem_context"
+                                  placeholder="Define the context of your worked-out example here."></textarea>
                     </label>
 
                     <label>Problem Description</label>
                     <label>
-                        <textarea placeholder="Describe the problem of your worked-out example here."></textarea>
+                        <textarea name="problem_description"
+                                  placeholder="Describe the problem of your worked-out example here."></textarea>
                     </label>
                 </div>
                 <div id="data-section" class="content-Section">
-                   <h2>Data Tables</h2>
-                    <!--  <label>Input Data</label>
-                    <label>
-                        <textarea placeholder="Define the input data of your worked-out example here."></textarea>
-                    </label>
 
-                    <label>Output Data</label>
-                    <label>
-                        <textarea placeholder="Define the output data of your worked-out example here."></textarea>
-                    </label> -->
-                    <div id="datatable1">
-                        <label id="data">Data Table #1: </label> 
-                        <textarea id="tablename">Enter the name for your first data table</textarea>
-                        <table id="myTable">
-                            <th>Attribute Name</th>
-                            <th>Attribute Type</th>
+                    <h2>Data Tables</h2>
+                    <div>
+                        <label id="data">Data Table #1: </label>
+                        <label for="table name"></label><textarea id="table name" placeholder="Enter the name for your first data table"></textarea>
+                        <table id="data_table_1">
                             <tr>
-                            <form id = "myform">
-                                <td><input type="text" id="aname" name="aname" value=""></td>
-                                <td> <input type="text" id="atype" name="atype" value=""></td>
-                            </form>
+                                <th>Attribute Name</th>
+                                <th>Attribute Type</th>
+                            </tr>
+                            <tr>
+                                <td><label for="aname"></label><input type="text" id="aname"
+                                                                      value=""></td>
+                                <td><label for="atype"></label><input type="text" id="atype"
+                                                                      value=""></td>
                             </tr>
                         </table>
                         <br>
-            
-                        <button onclick="myCreateFunction('myTable','aname','atype','myform')">Create row</button>
-                        <button onclick="myDeleteFunction('myTable')">Delete row</button>
+
+                        <button type="button" onclick="myCreateFunction('data_table_1')">Create
+                            row
+                        </button>
+                        <button type="button" onclick="myDeleteFunction('data_table_1')">Delete row</button>
                     </div>
-                
+
                     <div id="datatable1">
                         <label id="data">Data Table #2: </label>
-                        <textarea id="tablename">Enter the name for your second data table</textarea>
-                        <table id="myTable2">
-                            <th>Attribute Name</th>
-                            <th>Attribute Type</th>
+                        <label for="table name"></label><textarea id="table name" placeholder="Enter the name for your second data table"></textarea>
+                        <table id="data_table_2">
                             <tr>
-                            <form id = "myform2">
-                                <td><input type="text" id="aname2" name="aname" value=""></td>
-                                <td> <input type="text" id="atype2" name="atype" value=""></td>
-                            </form>
+                                <th>Attribute Name</th>
+                                <th>Attribute Type</th>
+                            </tr>
+
+                            <tr>
+                                <td><label for="aname"></label><input type="text" id="aname"
+                                                                      value=""></td>
+                                <td><label for="atype"></label><input type="text" id="atype"
+                                                                      value=""></td>
                             </tr>
                         </table>
                         <br>
-            
-                        <button onclick="myCreateFunction('myTable2','aname2','atype2','myform2')">Create row</button>
-                        <button onclick="myDeleteFunction('myTable2')">Delete row</button>
+
+                        <button type="button" onclick="myCreateFunction('data_table_2')">Create
+                            row
+                        </button>
+                        <button type="button" onclick="myDeleteFunction('data_table_2')">Delete row</button>
                     </div>
                 </div>
                 <div id="solution-section" class="content-Section">
@@ -106,23 +109,24 @@
                         <textarea placeholder="Explain the SQL code of your worked-out example here."></textarea>
                     </label> -->
                     <div id="datatable1">
-                        <label id="solution">List your step-by-step solutions below: </label> 
-                        <table id="myTable">
-                            <th>Step Number</th>
-                            <th>Step Description</th>
-                            <th>Suggested Codes</th>
+                        <label id="solution">List your step-by-step solutions below: </label>
+                        <table id="step_table">
                             <tr>
-                            <form id = "myform">
-                                <td><input type="number" id="snumber" name="snumber" value=""></td>
-                                <td><input type="text" id="sdescription" name="sdescription" value=""></td>
-                                <td> <input type="text" id="scode" name="scode" value=""></td>
-                            </form>
+                                <th>Step Number</th>
+                                <th>Step Description</th>
+                                <th>Suggested Codes</th>
+                            </tr>
+                            <tr>
+                                <td><label for="snumber"></label><input type="number" id="snumber" value=""></td>
+                                <td><label for="sdescription"></label><input type="text" id="sdescription" value="">
+                                </td>
+                                <td><label for="scode"></label><input type="text" id="scode" value=""></td>
                             </tr>
                         </table>
                         <br>
-            
-                        <button onclick="myCreateFunction('myTable','aname','atype','myform')">Create row</button>
-                        <button onclick="myDeleteFunction('myTable')">Delete row</button>
+
+                        <button type="button" onclick="myCreateFunction('step_table')">Create row</button>
+                        <button type="button" onclick="myDeleteFunction('step_table')">Delete row</button>
                     </div>
                 </div>
                 <div id="self-review-section" class="content-Section">
@@ -161,9 +165,12 @@
         </div>
         <div class="center">
             {% csrf_token %}
+            <input type="hidden" id="hiddenDataTableFormData" name="data_tables">
+            <input type="hidden" id="hiddenStepTableFormData" name="step_tables">
             <input type="submit" value="Cancel and Exit">
             <input type="submit" value="Save and Exit">
             <input type="submit" value="Save and Submit">
+            {#            <button type="submit">Save and Submit</button>#}
         </div>
     </form>
 {% endblock %}
@@ -184,24 +191,80 @@
                 });
             });
         });
+
         //Let user enter inputs and add rows for data tables
-        function myCreateFunction(tablename,fname,lname,myform) {
-            var table = document.getElementById(tablename);
-            var rowCount = table.rows.length;
-            var row = table.insertRow(rowCount);
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-            cell1.innerHTML = document.getElementById(fname).value;
-            cell2.innerHTML = document.getElementById(lname).value;
-            document.getElementById(myform).reset();
-        }
-        function myDeleteFunction(tablename) {
-            var table = document.getElementById(tablename);
-            var rowCount = table.rows.length;
-            if (rowCount >=2){
-            document.getElementById(tablename).deleteRow(rowCount-1);
+        function myCreateFunction(tablename) {
+            const table = document.getElementById(tablename);
+            const firstRow = table.rows[1];  // Get the first row to match the number of cells and input types
+            const cellCount = firstRow.cells.length;  // Number of cells in the first row
+
+            const newRow = table.insertRow(-1);  // Append a new row at the end of the table
+
+            // Create cells and inputs based on the first row
+            for (let i = 0; i < cellCount; i++) {
+                const newCell = newRow.insertCell(i);  // Insert a new cell in the new row
+                const firstInput = firstRow.cells[i].querySelector('input');  // Find the input in the first cell
+                const newInput = document.createElement('input');
+                newInput.type = firstInput.type;  // Set the input type to match the first row
+                newCell.appendChild(newInput);  // Append the input to the new cell
+
             }
-  	
         }
+
+
+        function myDeleteFunction(tablename) {
+            const table = document.getElementById(tablename);
+            const rowCount = table.rows.length;
+            if (rowCount >= 2) {
+                document.getElementById(tablename).deleteRow(rowCount - 1);
+            }
+
+        }
+
+        function prepareFormData() {
+            const tables = document.querySelectorAll('[id^="data_table"]');
+            const formData = [];
+
+            tables.forEach(table => {
+                const tableData = [];
+                const rows = table.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs.length === 2) {
+                        tableData.push({
+                            Attribute_Name: inputs[0].value,
+                            Attribute_Type: inputs[1].value
+                        });
+                    }
+                });
+                formData.push(tableData);
+            });
+
+            // Convert formData to JSON string for sending
+            document.getElementById('hiddenDataTableFormData').value = JSON.stringify(formData);
+            const step_tables = document.querySelectorAll('[id^="step_table"]');  // Assuming all tables have IDs starting with 'myTable'
+            const step_data_table = [];
+
+            step_tables.forEach(table => {
+                const tableData = [];
+                const rows = table.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs.length === 3) {
+                        tableData.push({
+                            Step_Number: inputs[0].value,
+                            Step_Description: inputs[1].value,
+                            Suggested_Codes: inputs[2].value
+
+                        });
+                    }
+                });
+                step_data_table.push(tableData);
+            });
+
+            // Convert formData to JSON string for sending
+            document.getElementById('hiddenStepTableFormData').value = JSON.stringify(formData);
+        }
+
     </script>
 {% endblock %}
