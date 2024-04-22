@@ -13,7 +13,7 @@ from .models import Example, ReviewQuestion, Question, DataColumn, DataTable, Pr
 
 def get_weather():
     api_key = "ff289146736a314c0c400765f2810086"
-    base_url = "http://api.openweathermap.org/geo/1.0/direct"
+    base_url = "https://api.openweathermap.org/geo/1.0/direct"
     url = f"{base_url}?lat=40.42&lon=86.90&appid={api_key}"
     response = requests.get(url)
 
@@ -101,6 +101,9 @@ def review_menu(request):
 
 @login_required(login_url='index')
 def review(request, example_id):
+    if request.method == 'POST':
+        # Process the review submission
+        return redirect('review')
     # Fetch the example first (optional: add error handling if example does not exist)
     # example = get_object_or_404(Example, pk=example_id)
     review_questions = ReviewQuestion.objects.all()
