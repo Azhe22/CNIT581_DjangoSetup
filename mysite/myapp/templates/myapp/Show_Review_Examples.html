@@ -56,13 +56,16 @@
             </div>
 
             <div class="reviewer-section">
-                <h3>For Reviewer</h3>
-
-                <div id="solution-submission">
-                    <label for="solution">Your solution:</label>
-                    <br>
-                    <textarea id="solution" name="solution"
-                              placeholder="Enter your proposed solutions here in the format of SQL codes."></textarea>
+                <h3>Review</h3>
+                <div class="solution-submission">
+                    {% for question in example.questions.all %}  {# Access related questions #}
+                        <p>{{ forloop.counter }}. {{ question.text }}</p>
+                        <label for="solution">Your Solution</label>
+                        <br>
+                        <textarea id="solution" name="solution"
+                                  placeholder="Enter your proposed solutions here in the format of SQL codes."></textarea>
+                        <br>
+                    {% endfor %}
                 </div>
 
                 <div id="rating-section">

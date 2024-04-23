@@ -1,4 +1,5 @@
 {% extends 'myapp/base.html' %}
+{% load variable_filters %}
 {% block title %} Be an Explorer {% endblock %}
 {% block content %}
     <div class="header-section">
@@ -7,20 +8,25 @@
                 <a href="{% url item.url %}">{{ item.name }}</a>{% if not forloop.last %} › {% endif %}
             {% endfor %}
         </nav>
-        <p class="welcome">
-            {% now "H" as current_hour %} {# Get the current hour (24-hour format) #}
-            {% if current_hour >= 5 and current_hour < 12 %}
-                Good morning,
-            {% elif current_hour >= 12 and current_hour < 18 %}
-                Good afternoon,
-            {% else %}
-                Good evening,
-            {% endif %}
-            {{ user.username }}
-            {% if temperature and description %}
-                The current weather is {{ description }} with a temperature of {{ temperature }} degrees.
-            {% endif %}
-        </p>
+        <div class="welcome">
+            <p>
+                {% now "H" as current_hour %} {# Get the current hour (24-hour format) #}
+                {% if current_hour|to_int >= 5 and current_hour|to_int < 12 %}
+                    Good morning,
+                {% elif current_hour|to_int >= 12 and current_hour|to_int < 18 %}
+                    Good afternoon,
+                {% else %}
+                    Good evening,
+                {% endif %}
+                {{ user.username }}
+            </p>
+            <p>
+                {% if temperature and description %}
+                    The weather in West Lafayette is {{ temperature }} F and {{ description }} .
+                {% endif %}
+            </p>
+        </div>
+
     </div>
     <div>
         <h2>
