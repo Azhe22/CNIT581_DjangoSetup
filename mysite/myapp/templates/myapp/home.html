@@ -16,12 +16,8 @@
     </div>
 {% endblock %}
 {% block content %}
-
-
     <div class="header-section">
-        <div>
-            Homepage
-        </div>
+        <div>Homepage</div>
         {% if user.is_authenticated %}
             <div>
                 <a id="SignIn">Welcome, {{ user.username }}</a>
@@ -52,6 +48,7 @@
                 <button class="open-button" onclick="openForm2()">Sign Up</button>
                 <div class="form-popup" id="signupForm">
                     <form method="post" class="form-container">
+                        {% csrf_token %}
                         <h1>Sign Up</h1>
                         <label for="email">Purdue Email</label>
                         <label>
@@ -118,7 +115,8 @@
 
         function openForm2() {
             const form = document.getElementById("signupForm");
-            if (form.style.visibility === "hidden") {
+            const visibility = window.getComputedStyle(form).visibility;
+            if (visibility === "hidden") {
                 form.style.visibility = "visible";
             } else {
                 form.style.visibility = "hidden";

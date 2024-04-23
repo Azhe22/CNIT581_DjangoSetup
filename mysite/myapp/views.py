@@ -1,11 +1,13 @@
 import json
+
 import requests
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
 
 from .models import Example, ReviewQuestion, Question, DataColumn, DataTable, Profile, Review, ReviewQuestionResponse, \
     ReviewStepResponse
@@ -24,30 +26,34 @@ def get_weather():
 
 
 # Create your views here.
-@csrf_exempt
+@csrf_protect
 def index(request):
-    if request.method == "POST" and 'sign_in' in request.POST:
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('index')  # Redirect to a home page or specific section of the app
-        else:
-            # Return an 'invalid login' error message specific to sign-in attempt
-            return render(request, 'myapp/home.html', {'error': 'Invalid username or password.'})
-    elif request.method == "POST" and 'sign_up' in request.POST:
-        username = request.POST['username']
-        password = request.POST['password']
-        email = request.POST['email']
-        user = User.objects.create_user(username=username, password=password, email=email)
-        user.save()
-        # Create a new user account
-        return redirect('index')
-    context = {
-        'user': request.user,
-        'sign_in_visibility': 'hidden' if request.user.is_authenticated else 'visible',
-    }
+    context = {'user': request.user}
+    if request.method == 'GET' and 'next' in request.GET:
+        messages.info(request, 'Please log in to access that page.')
+    if request.method == "POST":
+        if 'sign_in' in request.POST:
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('index')  # More specific redirection after login
+            else:
+                messages.error(request, 'Invalid username or password.')
+        elif 'sign_up' in request.POST:
+            username = request.POST['username']
+            password = request.POST['password']
+            email = request.POST['email']
+            # Additional error handling for existing users
+            if User.objects.filter(username=username).exists():
+                messages.error(request, 'Username already exists.')
+            else:
+                user = User.objects.create_user(username=username, password=password, email=email)
+                user.save()
+                Profile.objects.create(user=user)
+                return redirect('index')
+    context['sign_in_visibility'] = 'hidden' if request.user.is_authenticated else 'visible'
     return render(request, 'myapp/home.html', context)
 
 
@@ -72,7 +78,7 @@ def expert(request):
     }
     return render(request, 'myapp/be_an_expert.html', context)
 
-
+@login_required(login_url='index')
 def explore(request):
     context = {
         'navigation_items': [
@@ -82,7 +88,7 @@ def explore(request):
     }
     return render(request, 'myapp/be_an_explorer.html', context)
 
-
+@login_required(login_url='index')
 def review_menu(request):
     temperature, description = get_weather()
     example_list = Example.objects.filter()
